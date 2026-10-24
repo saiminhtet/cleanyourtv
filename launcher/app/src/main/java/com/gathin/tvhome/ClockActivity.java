@@ -1,10 +1,13 @@
 package com.gathin.tvhome;
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.TextView;
 
 /**
  * The clock screensaver shown by Home itself after home_idle_clock_minutes without input. Some TVs' own
@@ -13,12 +16,24 @@ import android.view.View;
  */
 public class ClockActivity extends Activity {
 
+    private static final String EXTRA_LINE = "com.gathin.tvhome.extra.LINE";
+    private static final String EXTRA_DETAIL = "com.gathin.tvhome.extra.DETAIL";
+
     private ClockScene scene;
+
+    /** Home's status_provider line and its detail come along, so the clock screen asks no other app itself. */
+    static Intent intent(Context context, String line, String detail) {
+        Intent i = new Intent(context, ClockActivity.class);
+        if (!line.isEmpty()) i.putExtra(EXTRA_LINE, line).putExtra(EXTRA_DETAIL, detail);
+        return i;
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dream_clock);
+        show(R.id.dreamLine, getIntent().getStringExtra(EXTRA_LINE));
+        show(R.id.dreamDetail, getIntent().getStringExtra(EXTRA_DETAIL));
         getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE);
         scene = new ClockScene(getWindow().getDecorView());
@@ -54,5 +69,12 @@ public class ClockActivity extends Activity {
     public void finish() {
         super.finish();
         overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out);
+    }
+
+    private void show(int id, String text) {
+        if (text == null || text.isEmpty()) return;
+        TextView view = findViewById(id);
+        view.setText(text);
+        view.setVisibility(View.VISIBLE);
     }
 }

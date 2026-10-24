@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Glance</string>
+    <string name="service_description">Shows the weather and the time for a few seconds when you press a remote button while watching. It sees key presses but never blocks them, and reads only which app is in front, never what is on screen.</string>
+    <string name="title">Glance</string>
+    <string name="intro">The weather (top left) and the time (top right) for 4 seconds, on the first button press after a quiet spell, over whatever you watch. Not over Home.</string>
+    <string name="state_on">Glance: On</string>
+    <string name="state_off">Glance: Off</string>
+    <string name="hint_on">OK switches it off: the remote then works as if Glance were not installed.</string>
+    <string name="hint_off">OK switches it on.</string>
+    <string name="stopped">Glance was stopped</string>
+    <string name="hint_stopped">Its service was switched off (a force-stop does this). OK switches it back on.</string>
+    <string name="no_permission">Glance may not switch its service back on. From a computer: adb shell pm grant %1$s android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="volume_note">If holding Volume Up only moves one step with Glance on, switch it off here: some TVs lose the volume ramp while a key service runs.</string>
+</resources>

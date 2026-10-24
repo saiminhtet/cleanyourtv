@@ -36,6 +36,7 @@ import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.NetworkRequest;
+import android.database.Cursor;
 import android.net.Uri;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -116,7 +117,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
     private long settingsRevision;
     /** Idle time on Home before ClockActivity; 0 is off (config.xml, home_idle_clock_minutes). */
     private long idleClockMs;
-    private final Runnable showIdleClock = () -> startActivity(new Intent(this, ClockActivity.class));
+    private final Runnable showIdleClock = () -> startActivity(ClockActivity.intent(this, this.statusText, this.statusDetail));
     private String liveTvAction;
     private String liveTvInputId;
     /** The app library is on (config.xml, app_library): only then can the tile menu take an app off Home. */
@@ -437,12 +438,16 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         btnWifi = findViewById(R.id.btnWifi);
         shamsiDate = findViewById(R.id.shamsiDate);
         stats = findViewById(R.id.stats);
+        statusLine = findViewById(R.id.statusLine);
         raceCalendar = cfg.raceCalendar;
         racePanel = findViewById(R.id.racePanel);
         raceKicker = findViewById(R.id.raceKicker);
         raceHeadline = findViewById(R.id.raceHeadline);
         raceSessions = findViewById(R.id.raceSessions);
         showStats = cfg.showStats;
+        statusProvider = cfg.statusProvider;
+        // Its space is kept from the start: the line arriving after the first read then moves nothing.
+        if (!statusProvider.isEmpty()) statusLine.setVisibility(View.INVISIBLE);
         shamsi = cfg.shamsiDate;
         greetingName = cfg.greetingName;
         if (shamsi) {
@@ -854,6 +859,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
             pillsShown = true;
         }
         if (showStats) startStats();
+        if (!statusProvider.isEmpty()) startStatus();
         sky.update();
         wallpaperPlayer.start();
         handler.postDelayed(minuteTick, MINUTE_MS);
@@ -1031,6 +1037,7 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         heroArt.animate().cancel();
         handler.removeCallbacks(minuteTick);
         stopStats();
+        stopStatus();
         if (diya != null) diya.stop();
         cancelPendingFocusScroll();
         // Nothing of ours stays on screen over another app; an undecided prompt simply returns next time.
@@ -1939,6 +1946,84 @@ public class MainActivity extends Activity implements AppAdapter.TileListener {
         // Paused (the quick panel or an app on top): keep the last line on screen. Taking it away moved the grid up
         // under a glass highlight that stayed put.
         if (!showStats) stats.setVisibility(View.GONE);
+    }
+
+    // ---- optional line from another app (config.xml status_provider) --------------------------------
+
+    private static final long STATUS_MS = 10 * 60_000L;
+    private static final long STATUS_RETRY_MS = 60_000L;
+    /** Content authority of the app that supplies the line; empty: off, nothing is read. */
+    private String statusProvider = "";
+    private TextView statusLine;
+    /** Background reader, like the stats one: started only while Home is resumed. */
+    private HandlerThread statusThread;
+    private volatile Handler statusBg;
+    /** When a line last came back (uptime ms), so pressing Home again doesn't ask the other app each time. */
+    private long statusReadAt;
+    /** The last line and its detail, for the idle clock screen (main thread only). */
+    private String statusText = "", statusDetail = "";
+
+    private void startStatus() {
+        if (statusThread != null) return;
+        // Not plain "status": the resource shrinker keeps every resource whose name starts with a string literal
+        // in the code, and AndroidX has status_bar_* strings in every language (45 KB).
+        statusThread = new HandlerThread("status-line");
+        statusThread.start();
+        Handler bg = new Handler(statusThread.getLooper());
+        statusBg = bg;
+        long wait = statusReadAt == 0 ? 0 : Math.max(0, statusReadAt + STATUS_MS - SystemClock.uptimeMillis());
+        bg.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (statusBg != bg) return;
+                String[] read = readStatusLine();
+                String line = read[0];
+                handler.post(() -> {
+                    if (statusBg != bg) return;
+                    statusText = line;
+                    statusDetail = read[1];
+                    if (!line.isEmpty()) {
+                        statusLine.setText(line);
+                        statusLine.setVisibility(View.VISIBLE);
+                        statusReadAt = SystemClock.uptimeMillis();
+                    } else {
+                        statusLine.setVisibility(View.INVISIBLE);   // an old or missing line goes, its space stays
+                    }
+                });
+                // Nothing yet (the supplier may be fetching for the first time): ask again soon.
+                if (statusBg == bg) bg.postDelayed(this, line.isEmpty() ? STATUS_RETRY_MS : STATUS_MS);
+            }
+        }, wait);
+    }
+
+    private void stopStatus() {
+        if (statusThread == null) return;
+        statusBg.removeCallbacksAndMessages(null);
+        statusThread.quit();
+        statusThread = null;
+        statusBg = null;
+    }
+
+    /**
+     * The supplier's line and its optional detail, cleaned; both empty when there is nothing. Runs off the main
+     * thread: the query is a call into another app.
+     */
+    private String[] readStatusLine() {
+        String[] none = {"", ""};
+        Uri uri = Uri.parse("content://" + statusProvider + "/status");
+        try (Cursor c = getContentResolver().query(uri, null, null, null, null)) {
+            if (c == null || !c.moveToFirst()) return none;
+            int text = c.getColumnIndex("text");
+            if (text < 0) return none;
+            int expires = c.getColumnIndex("expires");
+            if (expires >= 0 && !StatusLine.current(c.getLong(expires), System.currentTimeMillis())) return none;
+            int detail = c.getColumnIndex("detail");
+            String line = StatusLine.clean(c.getString(text));
+            return new String[]{line, line.isEmpty() || detail < 0 ? ""
+                    : StatusLine.clean(c.getString(detail), StatusLine.MAX_DETAIL_CHARS)};
+        } catch (RuntimeException e) {   // no such provider, not visible to us, or it failed
+            return none;
+        }
     }
 
     /** One quiet line, e.g. "CPU 8%  ·  Memory 430 MB free  ·  Storage 3.1 GB free". Runs off the main thread. */

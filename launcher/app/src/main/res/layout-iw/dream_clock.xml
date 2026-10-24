@@ -65,5 +65,33 @@
             android:fontFamily="@string/font_regular"
             android:letterSpacing="0.14"
             android:textAllCaps="true" />
+
+        <!-- Home's status_provider line and its detail, ClockActivity only (the system screensaver leaves them gone). -->
+        <TextView
+            android:id="@+id/dreamLine"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textDirection="rtl"
+            android:gravity="right"
+            android:layout_marginTop="18dp"
+            android:singleLine="true"
+            android:textColor="#D9FFFFFF"
+            android:textSize="26sp"
+            android:fontFamily="@string/font_regular"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/dreamDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textDirection="rtl"
+            android:gravity="right"
+            android:layout_marginTop="4dp"
+            android:singleLine="true"
+            android:textColor="#8CFFFFFF"
+            android:textSize="16sp"
+            android:fontFamily="@string/font_regular"
+            android:letterSpacing="0.04"
+            android:visibility="gone" />
     </LinearLayout>
 </FrameLayout>

@@ -27,8 +27,23 @@ Set in `app/src/main/res/values/options.xml` before building. With the defaults 
 | `forecast_days` | `3` | Days in the forecast row after today, 3 to 7. Above 3 the day cards share the row, with short day names, so a week fits on screen. |
 | `show_humidity` | `false` | The relative humidity now, after "Feels like". |
 | `show_wind` | `false` | The wind speed now in km/h, after "Feels like". |
+| `home_status` | `false` | A short line, "24° Cloudy", for the launcher's home screen under the clock. Set the launcher's `status_provider` to `io.github.sumyabazar1.weather.status` (in `config.xml` or a theme's `config.json`). See below. |
 
 ![A week, with humidity and wind](https://raw.githubusercontent.com/majnioui/cleanyourtv-contrib/pr-assets/addon-weather-week/weather-options.png)
+
+## On the home screen (`home_status`)
+
+With `home_status` on, the app also has a small read-only content provider,
+`content://io.github.sumyabazar1.weather.status/status`. It answers a `text` column ("24° Cloudy": temperature and
+sky only, no place name), a `detail` column ("Feels like 26° · Humidity 80% · Wind 9 km/h", which the launcher's
+idle clock screen shows) and an `expires` time three hours after the reading. The launcher asks it while Home is on
+screen, about every 10 minutes. When the kept line is older than 30 minutes, the provider fetches the weather now
+from Open-Meteo in that same call, at most once every 5 minutes. Opening the weather page also updates it. Nothing
+runs while nobody asks: there is still no background service, job or alarm. With the option off (the default), the
+provider is disabled and the app is as above.
+
+The provider is open to any app on the TV, like the launcher's other inputs: it gives out the temperature and the
+sky words, nothing else.
 
 ## Permissions
 
@@ -37,7 +52,8 @@ Set in `app/src/main/res/values/options.xml` before building. With the defaults 
 | `INTERNET` | Open-Meteo: the place search, the weather and the air quality. |
 
 That is all. What is sent: the city name you type in the search, then that place's latitude and longitude. No
-account, no telemetry, no ads, no background service, no location permission. The chosen city stays in the
+account, no telemetry, no ads, no background service, no location permission. With `home_status` on, the same
+request is also made when the launcher asks for its line (see above). The chosen city stays in the
 app's own storage (backups are off).
 
 ## Build and install

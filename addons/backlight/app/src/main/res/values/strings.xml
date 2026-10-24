@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Backlight</string>
+    <string name="title">Backlight</string>
+    <string name="hint">◀ ▶ adjust · OK or Back closes</string>
+    <string name="unsupported">This TV has no picture_backlight setting, so there is nothing to change here. Use the TV\'s own Picture menu.</string>
+    <string name="no_permission">Not allowed to change the backlight yet. From a computer: adb shell pm grant %1$s android.permission.WRITE_SECURE_SETTINGS</string>
+</resources>

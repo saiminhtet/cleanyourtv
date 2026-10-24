@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a dark picture with a soft top band, a cloud at the left and a clock face at the right. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#1B2430" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#2E3B4C" android:pathData="M0,0h320v62h-320z" />
+    <path android:fillColor="#FFFFFF" android:pathData="M40,46a12,12 0 0 1 6,-22a16,16 0 0 1 30,4a10,10 0 0 1 2,18z" />
+    <path android:fillColor="#00000000" android:strokeColor="#6EC6FF" android:strokeWidth="5" android:pathData="M262,34m-18,0a18,18 0 1 1 36,0a18,18 0 1 1 -36,0" />
+    <path android:strokeColor="#6EC6FF" android:strokeWidth="5" android:strokeLineCap="round" android:pathData="M262,34v-10M262,34l8,6" />
+    <path android:fillColor="#6EC6FF" android:pathData="M24,150h120v6h-120z" />
+</vector>

@@ -30,5 +30,13 @@
             </intent-filter>
             <meta-data android:name="com.gathin.tvhome.card" android:resource="@xml/module_card" />
         </activity>
+
+        <!-- The launcher's line under the clock (options.xml home_status, off by default): read-only, the
+             temperature and sky words only, no place name. -->
+        <provider
+            android:name=".StatusProvider"
+            android:authorities="io.github.sumyabazar1.weather.status"
+            android:enabled="@bool/home_status"
+            android:exported="true" />
     </application>
 </manifest>

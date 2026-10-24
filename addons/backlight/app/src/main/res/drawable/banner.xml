@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 16:9 banner: a sun over a slider track, two thirds full. Own art. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:fillColor="#141416" android:pathData="M0,0h320v180h-320z" />
+    <path android:fillColor="#FFD166" android:pathData="M160,44a26,26 0 1 1 0,52a26,26 0 1 1 0,-52z" />
+    <path android:strokeColor="#FFD166" android:strokeWidth="7" android:strokeLineCap="round"
+        android:pathData="M160,18v8M160,114v8M116,70h8M196,70h8M129,39l6,6M185,95l6,6M129,101l6,-6M185,45l6,-6" />
+    <path android:fillColor="#3A3A40" android:pathData="M48,140h224a6,6 0 0 1 0,12h-224a6,6 0 0 1 0,-12z" />
+    <path android:fillColor="#FFD166" android:pathData="M48,140h150v12h-150a6,6 0 0 1 0,-12z" />
+</vector>

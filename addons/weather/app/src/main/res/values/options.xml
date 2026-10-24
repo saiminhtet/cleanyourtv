@@ -4,7 +4,11 @@
     <!-- Days in the forecast row after today, 3 to 7. Above 3 the day cards share the row and get more compact. -->
     <integer name="forecast_days">3</integer>
     <!-- The relative humidity now, after "Feels like". -->
-    <bool name="show_humidity">false</bool>
+    <bool name="show_humidity">true</bool>
     <!-- The wind speed now, in km/h, after "Feels like". -->
-    <bool name="show_wind">false</bool>
+    <bool name="show_wind">true</bool>
+    <!-- A short line ("24° Cloudy") for the Clean Your TV launcher's home screen, under the clock (its
+         status_provider key). The app then also answers the launcher in the background, fetching the weather now
+         at most every 30 minutes, only when the launcher asks while Home is on screen. -->
+    <bool name="home_status">true</bool>
 </resources>

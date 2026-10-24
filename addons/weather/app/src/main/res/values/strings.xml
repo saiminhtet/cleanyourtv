@@ -3,6 +3,8 @@
     <string name="app_name">Weather</string>
 
     <string name="feels_like">Feels like %1$d°</string>
+    <!-- The launcher's line under the clock (home_status): temperature and sky, e.g. "24° Cloudy". -->
+    <string name="status_line">%1$d° %2$s</string>
     <string name="humidity">Humidity %1$d%%</string>
     <string name="wind">Wind %1$d km/h</string>
     <string name="high_low">%1$d° / %2$d°</string>
